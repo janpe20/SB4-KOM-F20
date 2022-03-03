@@ -1,43 +1,40 @@
-package dk.sdu.mmmi.cbse.playersystem;
+package dk.sdu.mmmi.cbse.enemysystem;
 
 import dk.sdu.mmmi.cbse.common.data.Entity;
 import dk.sdu.mmmi.cbse.common.data.GameData;
-import static dk.sdu.mmmi.cbse.common.data.GameKeys.LEFT;
-import static dk.sdu.mmmi.cbse.common.data.GameKeys.RIGHT;
-import static dk.sdu.mmmi.cbse.common.data.GameKeys.UP;
 import dk.sdu.mmmi.cbse.common.data.World;
 import dk.sdu.mmmi.cbse.common.data.entityparts.LifePart;
 import dk.sdu.mmmi.cbse.common.data.entityparts.MovingPart;
 import dk.sdu.mmmi.cbse.common.data.entityparts.PositionPart;
 import dk.sdu.mmmi.cbse.common.services.IEntityProcessingService;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
+
+import java.util.Random;
+
+import static dk.sdu.mmmi.cbse.common.data.GameKeys.*;
 
 /**
- *
  * @author jcs
  */
-public class PlayerControlSystem implements IEntityProcessingService {
+public class EnemyControlSystem implements IEntityProcessingService {
 
     @Override
     public void process(GameData gameData, World world) {
 
-        for (Entity player : world.getEntities(Player.class)) {
-            PositionPart positionPart = player.getPart(PositionPart.class);
-            MovingPart movingPart = player.getPart(MovingPart.class);
-            LifePart lifePart = player.getPart(LifePart.class);
+        for (Entity enemy : world.getEntities(Enemy.class)) {
+            PositionPart positionPart = enemy.getPart(PositionPart.class);
+            MovingPart movingPart = enemy.getPart(MovingPart.class);
+            LifePart lifePart = enemy.getPart(LifePart.class);
 
-            movingPart.setLeft(gameData.getKeys().isDown(LEFT));
-            movingPart.setRight(gameData.getKeys().isDown(RIGHT));
-            movingPart.setUp(gameData.getKeys().isDown(UP));
-            
-            
-            movingPart.process(gameData, player);
-            positionPart.process(gameData, player);
-            lifePart.process(gameData, player);
+            float rnd = new Random().nextFloat();
+            movingPart.setLeft(rnd < 0.2f);
+            movingPart.setRight(rnd > 0.9f);
+            movingPart.setUp(rnd > 0.2f & rnd < 0.8f);
 
-            updateShape(player);
+            movingPart.process(gameData, enemy);
+            positionPart.process(gameData, enemy);
+            lifePart.process(gameData, enemy);
+
+            updateShape(enemy);
         }
     }
 
